@@ -1,0 +1,48 @@
+---
+title: "MTA Art Collection"
+format: html
+---
+
+
+```{r}
+#| label: setup
+
+library(tidyverse)
+library(sf)
+
+#get data
+
+mta_art <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-07-22/mta_art.csv') |> 
+    filter(agency == 'NYCT')
+station_lines <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-07-22/station_lines.csv') |> 
+    filter(agency == 'NYCT')
+
+subway_lines <- st_read("shapefiles/subwaylines.shp")
+subway_stations <- st_read("shapefiles/subwaystations.shp")
+
+mta_colors <- read_csv("MTA_Colors_20250929.csv")
+
+```
+
+```{r}
+
+art_by_station <- mta_art %>%
+  group_by(station_name) %>%
+  summarise(num_artworks = n())
+
+
+
+```
+
+```{r}
+#| label: map subway lines
+
+ggplot() +
+  geom_sf(data = subway_lines, aes(color = service), size = 1, alpha = 0.8) +
+  geom_sf(data = subway_stations, color = "black", size = 0.5) +
+  theme_void() +
+  theme(legend.position = "none") +
+  labs(title = "New York City Subway Lines",
+       subtitle = "Data from NYC Open Data",
+       caption = "Visualization by Your Name")
+```

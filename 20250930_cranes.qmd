@@ -1,0 +1,45 @@
+---
+title: "Tidy Tuesday 2025-09-30: Cranes"
+format: html
+---
+
+
+```{r}
+#| label: setup
+
+library(tidyverse)
+
+cranes <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-09-30/cranes.csv') |> 
+    mutate(obs_year = factor(year(date)))
+glimpse(cranes)
+
+```
+
+
+```{r}
+#| label: plot cranes
+
+# Create a line chart with day of year on x-axis and separate lines per year
+cranes |>
+  filter(!is.na(observations)) |>
+  mutate(day_of_year = yday(date)) |>
+  arrange(obs_year, date) |>
+  group_by(obs_year) |>
+  mutate(
+    date_diff = c(NA, diff(date)),
+    new_group = cumsum(is.na(date_diff) | date_diff > 14) # Break if gap > 14 days
+  ) |>
+  ggplot(aes(x = day_of_year, y = observations, color = obs_year)) +
+#   geom_line(aes(group = paste(obs_year, new_group)), linewidth = 1.2, alpha = 0.8) +
+  geom_point(size = 1.5, alpha = 0.6) +
+  labs(
+    title = "Crane Observations Throughout the Year",
+    x = "Day of Year",
+    y = "Number of Cranes Observed",
+    color = "Year"
+  ) +
+  scale_x_continuous(breaks = c(1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335),
+                     labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+                               "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")) +
+  theme_minimal()
+```
