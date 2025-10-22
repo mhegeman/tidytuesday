@@ -10,20 +10,22 @@ format: html
 library(tidyverse)
 
 cranes <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-09-30/cranes.csv') |> 
-    mutate(obs_year = factor(year(date)))
+    mutate(obs_year = factor(year(date)),
+           numeric_year = year(date),
+           day_of_year = yday(date)) |> 
+    filter(!is.na(observations) & observations > 0) |> 
+    arrange(date)
+  
 glimpse(cranes)
 
 ```
 
 
 ```{r}
-#| label: plot cranes
+#| label: point plot cranes
 
-# Create a line chart with day of year on x-axis and separate lines per year
-cranes |>
-  filter(!is.na(observations)) |>
-  mutate(day_of_year = yday(date)) |>
-  arrange(obs_year, date) |>
+# Create a point chart with day of year on x-axis and separate lines per year
+cranes |> 
   group_by(obs_year) |>
   mutate(
     date_diff = c(NA, diff(date)),
@@ -42,4 +44,132 @@ cranes |>
                      labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", 
                                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")) +
   theme_minimal()
+```
+
+What date has the maximum observerved cranes each year in the spring migration?
+Does the date of the first observation change over the years? 
+
+```{r}
+#| label: median arrival spring and fall
+
+x <- cranes |> 
+  mutate(day_of_year = yday(date), 
+         season = case_when(
+           day_of_year <= 150 ~ "Spring",
+           day_of_year >= 150 ~ "Fall",
+           TRUE ~ "Other"
+         )) |> 
+  filter(season != "Other") |> 
+  group_by(obs_year, season) |>
+  summarise(max_observations = max(observations),
+            max_day = day_of_year[which.max(observations)],
+            num_observations = n(),
+            total_cranes = sum(observations),
+            .groups = "drop")
+
+
+m <- x |> 
+  group_by(season) |>
+  summarise(median_day = median(max_day),
+            .groups = "drop")
+```
+
+
+```{r}
+#| label: plot median arrival spring and fall
+
+spring <- x |> 
+  filter(season == "Spring")
+
+spring |> 
+  arrange(obs_year) |>
+  ggplot(aes(x = median_day, y = obs_year)) +
+  # geom_path(linewidth = 1.2) +
+  geom_point(size = 3) +
+  labs(
+    title = "Median Arrival Days of Cranes in Spring and Fall",
+    x = "Day of Year",
+    y = "Number of Observations per Year",
+    color = "Season"
+  ) +
+  theme_minimal() + 
+  facet_wrap(~season)
+
+```
+
+
+
+
+
+```{r}
+#| label: number of observations per year
+
+obs <- cranes |> 
+  filter(!is.na(observations) & observations > 0) |>
+  group_by(obs_year) |>
+  summarise(total_observations = n(),
+            total_cranes = sum(observations),
+            .groups = "drop")
+```
+
+
+I want to make a diverging bar chart of the first day of observations in spring every year. 
+
+```{r}
+# Calculate first observation day for each year in spring
+spring_timing <- cranes |>
+  mutate(day_of_year = yday(date)) |>
+  filter(day_of_year <= 150) |>  # Spring observations only
+  group_by(obs_year) |>
+  summarise(
+    first_observation = min(day_of_year),
+    peak_day = day_of_year[which.max(observations)],
+    total_spring_cranes = sum(observations),
+    .groups = "drop"
+  ) |>
+  mutate(year_numeric = as.numeric(as.character(obs_year)))
+
+# Check for trend in first observation timing
+spring_timing |>
+  ggplot(aes(x = year_numeric, y = first_observation)) +
+  geom_point(size = 3, color = "steelblue") +
+  geom_smooth(method = "lm", se = TRUE, color = "darkred") +
+  labs(
+    title = "First Spring Crane Observation Over Years",
+    subtitle = "Is crane arrival getting earlier?",
+    x = "Year",
+    y = "Day of Year (First Observation)"
+  ) +
+  scale_y_continuous(
+    breaks = c(60, 75, 90, 105, 120),
+    labels = c("Mar 1", "Mar 16", "Mar 31", "Apr 15", "Apr 30")
+  ) +
+  theme_minimal()
+
+# Statistical test for trend
+cor.test(spring_timing$year_numeric, spring_timing$first_observation)
+```
+
+
+
+```{r}
+# Check if peak timing is also shifting
+spring_timing |>
+  ggplot(aes(x = year_numeric, y = peak_day)) +
+  geom_point(size = 3, color = "lightgrey") +
+  geom_smooth(method = "lm", se = TRUE, color = "darkred") +
+  labs(
+    title = glue::glue("Peak Spring Crane Observation 1994-2024"),
+    subtitle = "Is the peak crane observation date shifting?",
+    x = "Year", 
+    y = "Day of Year (Peak Observation)"
+  ) +
+  scale_y_continuous(
+    breaks = c(60, 75, 90, 105, 120),
+    labels = c("Mar 1", "Mar 16", "Mar 31", "Apr 15", "Apr 30")
+  ) +  
+  theme_minimal()
+
+
+cor.test(spring_timing$year_numeric, spring_timing$peak_day)
 ```
