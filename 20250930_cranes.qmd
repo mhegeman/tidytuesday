@@ -12,9 +12,17 @@ library(tidyverse)
 cranes <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-09-30/cranes.csv') |> 
     mutate(obs_year = factor(year(date)),
            numeric_year = year(date),
-           day_of_year = yday(date)) |> 
+           day_of_year = yday(date), 
+           season = if_else(day_of_year <= 160, "spring", "fall")) |> 
     filter(!is.na(observations) & observations > 0) |> 
-    arrange(date)
+    arrange(date) |> 
+    group_by(obs_year) |>
+    mutate(observation_flag = case_when(
+      date == min(date) ~ "first",
+      date == max(date) ~ "last",
+      observations == max(observations) ~ "max",
+      TRUE ~ "other"
+    ))
   
 glimpse(cranes)
 
@@ -72,6 +80,8 @@ m <- x |>
   group_by(season) |>
   summarise(median_day = median(max_day),
             .groups = "drop")
+
+View(m)
 ```
 
 
@@ -172,4 +182,23 @@ spring_timing |>
 
 
 cor.test(spring_timing$year_numeric, spring_timing$peak_day)
+```
+
+
+```{r}
+#| label: max observation date  
+
+max_obs <- cranes |> 
+  filter(observation_flag == "max")
+
+
+View(max_obs)
+
+ggplot(max_obs |> 
+          filter(season == 'spring'), 
+      aes(x = day_of_year, y = observations)) +
+  geom_point() + 
+  theme_minimal()
+
+
 ```
