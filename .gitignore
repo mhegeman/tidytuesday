@@ -38,3 +38,6 @@ vignettes/*.pdf
 .vdoc*
 .vdoc*.r
 .positai
+
+CLAUDE.md
+MEMORY.md
