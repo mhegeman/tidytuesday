@@ -51,6 +51,9 @@ paid_leave <- eplp |>
 paid_leave_current <- paid_leave |>
   slice_max(year)
 
+top_five_countries <- paid_leave_current |>
+  slice_max(par1_ld, n = 5)
+
 # ── 5. Bluesky logo ───────────────────────────────────────────
 bsky_logo_path <- "tidytuesday Resources/bsky_logo.png"
 if (!file.exists(bsky_logo_path)) {
@@ -64,14 +67,35 @@ if (!file.exists(bsky_logo_path)) {
 
 # ── 6. Plot ───────────────────────────────────────────────────
 
-caption = glue(
+
+theme_set(
+  theme_minimal(base_family = "sans") +
+    theme(
+      plot.background  = element_rect(fill = bg, color = NA),
+      panel.background = element_rect(fill = bg, color = NA),
+      panel.grid.major = element_line(color = grid_col, linewidth = 0.4),
+      panel.grid.minor = element_blank(),
+      axis.text        = element_text(color = muted, size = 9),
+      axis.title       = element_text(color = muted, size = 9),
+      plot.title       = element_text(size = 18, face = "bold", color = ink,
+                                      margin = margin(b = 5)),
+      plot.subtitle    = element_markdown(size = 10, color = muted,
+                                          margin = margin(b = 16)),
+      plot.caption     = element_markdown(size = 7.5, color = muted, hjust = 0,
+                                          margin = margin(t = 12)),
+      plot.margin      = margin(18, 22, 14, 22)
+    )
+)
+
+
+caption1 = glue(
   "Data: S. Spitzer et al., 'The European Parenting Leave Policies (EPLP) Dataset'.",
   "<br>Zenodo, Nov. 19, 2025. doi: 10.5281/zenodo.17648712",
   "<br>#TidyTuesday 2026-06-02  |  ",
   "<img src='{bsky_logo_path}' width='12'/> @mel-likes-maps.bsky.social"
 )
 
-p <- ggplot() +
+p1 <- ggplot() +
   geom_col(
     data = paid_leave_current,
     aes(
@@ -80,29 +104,26 @@ p <- ggplot() +
     ),
     fill = col_main
   ) +
-  theme_minimal(base_family = "sans") +
-  theme(
-    plot.background  = element_rect(fill = bg, color = NA),
-    panel.background = element_rect(fill = bg, color = NA),
-    panel.grid.major = element_line(color = grid_col, linewidth = 0.4),
-    panel.grid.minor = element_blank(),
-    axis.text        = element_text(color = muted, size = 9),
-    axis.title       = element_text(color = muted, size = 9),
-    plot.title       = element_text(size = 18, face = "bold", color = ink,
-                                    margin = margin(b = 5)),
-    plot.subtitle    = element_markdown(size = 10, color = muted,
-                                        margin = margin(b = 16)),
-    plot.caption     = element_markdown(size = 7.5, color = muted, hjust = 0,
-                                        margin = margin(t = 12)),
-    plot.margin      = margin(18, 22, 14, 22)
-  ) +
   labs(
     title    = "Paid parental leave duration in Europe",
     subtitle = "2024",
     x        = "Leave duration (weeks)",
     y        = NULL,
-    caption  = caption
-    )
+    caption  = caption1
+  )
 
+p1
 
+top_five <- paid_leave |>
+  filter(country %in% top_five_countries$country)
 
+p2 <- ggplot() +
+  geom_line(
+    data = top_five,
+    aes(x = factor(year),
+        y = par1_ld,
+        group = country_name,
+        color = country_name)
+  )
+
+p2
