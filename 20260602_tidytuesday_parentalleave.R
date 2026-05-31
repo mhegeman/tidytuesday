@@ -63,6 +63,14 @@ if (!file.exists(bsky_logo_path)) {
 }
 
 # ── 6. Plot ───────────────────────────────────────────────────
+
+caption = glue(
+  "Data: S. Spitzer et al., 'The European Parenting Leave Policies (EPLP) Dataset'.",
+  "<br>Zenodo, Nov. 19, 2025. doi: 10.5281/zenodo.17648712",
+  "<br>#TidyTuesday 2026-06-02  |  ",
+  "<img src='{bsky_logo_path}' width='12'/> @mel-likes-maps.bsky.social"
+)
+
 p <- ggplot() +
   geom_col(
     data = paid_leave_current,
@@ -93,10 +101,8 @@ p <- ggplot() +
     subtitle = "2024",
     x        = "Leave duration (weeks)",
     y        = NULL,
-    caption  = glue(
-      "Data: S. Spitzer et al., “The European Parenting Leave Policies (EPLP) Dataset”.\n Zenodo, Nov. 19, 2025. doi: 10.5281/zenodo.17648712.\n  |  #TidyTuesday 2026-06-02  |  ",
-      "<img src='{bsky_logo_path}' width='12'/> @mel-likes-maps.bsky.social"
+    caption  = caption
     )
-  )
+
 
 
