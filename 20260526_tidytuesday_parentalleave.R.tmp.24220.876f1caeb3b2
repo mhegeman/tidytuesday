@@ -1,0 +1,39 @@
+library(tidyverse)
+
+
+# european parental leave polices
+eplp <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2026/2026-06-02/eplp.csv')
+
+# Country code -> full name lookup
+country_names <- c(
+  AT = "Austria", BE = "Belgium", BG = "Bulgaria", CY = "Cyprus",
+  CZ = "Czech Republic", DE = "Germany", DK = "Denmark", EE = "Estonia",
+  EL = "Greece", GR = "Greece", ES = "Spain", FI = "Finland", FR = "France",
+  HR = "Croatia", HU = "Hungary", IE = "Ireland", IT = "Italy",
+  LT = "Lithuania", LU = "Luxembourg", LV = "Latvia", MT = "Malta",
+  NL = "Netherlands", PL = "Poland", PT = "Portugal", RO = "Romania",
+  SE = "Sweden", SI = "Slovenia", SK = "Slovakia", NO = "Norway",
+  IS = "Iceland", LI = "Liechtenstein", CH = "Switzerland", UK = "United Kingdom"
+)
+
+eplp <- eplp |>
+  mutate(country_name = country_names[country])
+
+
+# Mandatory Maternity leave?
+
+man_maternity <- eplp |>
+  select(country, year, mat_m_ld_bb, mat_m_ld_ab)
+
+man_maternity_current <- man_maternity |>
+  group_by(country) |>
+  slice_max(year)
+
+
+ggplot(man_maternity_current, aes(x = mat_m_ld_ab, y = country)) +
+  geom_col() +
+  theme_minimal() +
+  labs(
+    title = "Maternity leave after birth in Europe.",
+    x = "Months after birth"
+  )
