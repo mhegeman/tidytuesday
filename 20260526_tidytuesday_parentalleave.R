@@ -94,19 +94,9 @@ p <- ggplot() +
     x        = "Leave duration (weeks)",
     y        = NULL,
     caption  = glue(
-      "Data: Spitzer et al. (2025) EPLP Dataset  |  #TidyTuesday 2026-06-02  |  ",
+      "Data: S. Spitzer et al., “The European Parenting Leave Policies (EPLP) Dataset”.\n Zenodo, Nov. 19, 2025. doi: 10.5281/zenodo.17648712.\n  |  #TidyTuesday 2026-06-02  |  ",
       "<img src='{bsky_logo_path}' width='12'/> @mel-likes-maps.bsky.social"
     )
   )
 
-# ── 7. Save ───────────────────────────────────────────────────
-ggsave(
-  filename = "tidytuesday Resources/20260602_tidytuesday_parentalleave.png",
-  plot     = p,
-  width    = 10,
-  height   = 8,
-  dpi      = 300,
-  bg       = bg
-)
 
-message("Saved: tidytuesday Resources/20260602_tidytuesday_parentalleave.png")
