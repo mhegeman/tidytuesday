@@ -43,7 +43,7 @@ ggplot() +
   theme_minimal() +
   labs(
     title = "Paid parental leave duration in Europe",
-    subtitle = "2024"
+    subtitle = "2024",
     x = "Year",
     y = "Leave duration (weeks)"
   )
