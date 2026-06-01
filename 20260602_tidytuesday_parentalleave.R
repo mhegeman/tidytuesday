@@ -120,10 +120,12 @@ top_five <- paid_leave |>
 p2 <- ggplot() +
   geom_line(
     data = top_five,
-    aes(x = factor(year),
+    aes(x = year,
         y = par1_ld,
         group = country_name,
         color = country_name)
-  )
+  ) +
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 6)) +
+  theme(legend.position = "none")
 
 p2
