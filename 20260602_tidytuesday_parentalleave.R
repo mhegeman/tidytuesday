@@ -117,6 +117,11 @@ p1
 top_five <- paid_leave |>
   filter(country %in% top_five_countries$country)
 
+top_five_labels <- top_five |>
+  group_by(country_name) |>
+  slice_max(year, n = 1) |>
+  ungroup()
+
 p2 <- ggplot() +
   geom_line(
     data = top_five,
@@ -125,7 +130,15 @@ p2 <- ggplot() +
         group = country_name,
         color = country_name)
   ) +
-  scale_x_continuous(breaks = scales::pretty_breaks(n = 6)) +
+  geom_text(
+    data = top_five_labels,
+    aes(x = year, y = par1_ld, label = country_name, color = country_name),
+    hjust = -0.1, size = 3
+  ) +
+  scale_x_continuous(
+    breaks = scales::pretty_breaks(n = 6),
+    expand = expansion(mult = c(0.02, 0.18))
+  ) +
   theme(legend.position = "none")
 
 p2
