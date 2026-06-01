@@ -117,15 +117,43 @@ p1
 top_five <- paid_leave |>
   filter(country %in% top_five_countries$country)
 
+top_five_labels <- top_five |>
+  group_by(country_name) |>
+  slice_max(year, n = 1) |>
+  ungroup()
+
 p2 <- ggplot() +
-  geom_line(
+  # geom_line(
+  #   data = top_five,
+  #   aes(x = year,
+  #       y = par1_ld,
+  #       group = country_name,
+  #       color = country_name)
+  # ) +
+  geom_smooth(
     data = top_five,
     aes(x = year,
         y = par1_ld,
         group = country_name,
-        color = country_name)
+        color = country_name),
+    method = "loess", se = FALSE, span = 0.15
   ) +
-  scale_x_continuous(breaks = scales::pretty_breaks(n = 6)) +
-  theme(legend.position = "none")
+  geom_text(
+    data = top_five_labels,
+    aes(x = year, y = par1_ld, label = country_name, color = country_name),
+    hjust = -0.1, size = 3
+  ) +
+  scale_x_continuous(
+    breaks = scales::pretty_breaks(n = 6),
+    expand = expansion(mult = c(0.02, 0.18))
+  ) +
+  theme(legend.position = "none") +
+  labs(
+    title = "Top 5 European countries \nwith the most generous paid parental leave.",
+    subtitle = "Changes to paid leave over time — 1970-2024.",
+    x = "Year",
+    y = "Leave duration (weeks)",
+    caption = caption1
+  )
 
 p2
