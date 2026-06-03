@@ -41,3 +41,5 @@ vignettes/*.pdf
 
 CLAUDE.md
 MEMORY.md
+
+data/
