@@ -10,9 +10,9 @@ Project created 2026-05-21. Week 1 (2026-05-12, Twinned Cities) in progress.
 - Primary tools: R, tidyverse, ggplot2.
 - Set up as an RStudio project (.Rproj). Working directory is always the project root.
 - Project has a `data/` folder for local copies of each week's dataset.
-- R scripts live in the `R/` folder. Naming convention: `YYYYMMDD_tidytuesday_description.R`.
+- R scripts live directly in the `tidytuesday/` folder (not in an `R/` subfolder). Naming convention: `YYYYMMDD_tidytuesday_description.R`.
 - Exported plots saved to `tidytuesday Resources/`. Naming convention: `YYYYMMDD_tidytuesday_description.png`.
-- Week of 2026-05-12 (Twinned Cities): script at `R/20260512_tidytuesday_twincities.R`.
+- Week of 2026-05-12 (Twinned Cities): script at `20260512_tidytuesday_twincities.R`.
 
 ## Working Notes
 

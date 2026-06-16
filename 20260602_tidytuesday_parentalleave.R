@@ -41,11 +41,17 @@ muted    <- "#8888a8"
 col_main <- "#f5c842"
 grid_col <- "#1e1e38"
 
+# Light palette (used for p2)
+bg_light   <- "#f7f7f2"
+ink_light  <- "#1a1a2e"
+muted_light <- "#666688"
+grid_light  <- "#e0e0ec"
+
 # ── 4. Prep data ──────────────────────────────────────────────
 # par1_ld = maximum paid parental leave duration (weeks)
 # -98 = not applicable, -99 = missing — exclude both
 paid_leave <- eplp |>
-  select(country, country_name, year, par1_ld) |>
+  select(country, country_name, year, par1_ld, par1_for_whom) |>
   filter(!par1_ld %in% c(-98, -99), !is.na(par1_ld))
 
 paid_leave_current <- paid_leave |>
@@ -122,6 +128,23 @@ top_five_labels <- top_five |>
   slice_max(year, n = 1) |>
   ungroup()
 
+theme_light_p2 <- theme(
+  plot.background  = element_rect(fill = bg_light, color = NA),
+  panel.background = element_rect(fill = bg_light, color = NA),
+  panel.grid.major = element_line(color = grid_light, linewidth = 0.4),
+  panel.grid.minor = element_blank(),
+  axis.text        = element_text(color = muted_light, size = 9),
+  axis.title       = element_text(color = muted_light, size = 9),
+  plot.title       = element_text(size = 18, face = "bold", color = ink_light,
+                                  margin = margin(b = 5)),
+  plot.subtitle    = element_markdown(size = 10, color = muted_light,
+                                      margin = margin(b = 16)),
+  plot.caption     = element_markdown(size = 7.5, color = muted_light, hjust = 0,
+                                      margin = margin(t = 12)),
+  plot.margin      = margin(18, 22, 14, 22),
+  legend.position  = "none"
+)
+
 p2 <- ggplot() +
   # geom_line(
   #   data = top_five,
@@ -143,13 +166,20 @@ p2 <- ggplot() +
     aes(x = year, y = par1_ld, label = country_name, color = country_name),
     hjust = -0.1, size = 3
   ) +
+  scale_color_manual(values = c(
+    "#E69F00",  # orange
+    "#56B4E9",  # sky blue
+    "#009E73",  # teal green
+    "#CC79A7",  # mauve
+    "#0072B2"   # deep blue
+  )) +
   scale_x_continuous(
     breaks = scales::pretty_breaks(n = 6),
     expand = expansion(mult = c(0.02, 0.18))
   ) +
-  theme(legend.position = "none") +
+  theme_light_p2 +
   labs(
-    title = "Top 5 European countries \nwith the most generous paid parental leave.",
+    title = "Top 5 European countries \nwith the most generous paid parental leave (maximum duration).",
     subtitle = "Changes to paid leave over time — 1970-2024.",
     x = "Year",
     y = "Leave duration (weeks)",

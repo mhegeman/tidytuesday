@@ -10,7 +10,7 @@ Produce a clean, well-crafted R visualization each week using the #TidyTuesday d
 2. **Explore** — Profile the data: check for NAs, spot distributions, identify the most interesting angle. Don't start cleaning until you know what you're working with.
 3. **Clean** — Tidy the data for the specific story you want to tell. Keep cleaning scoped — only transform what the visualization actually needs.
 4. **Visualize** — Build the chart in ggplot2. Start with a rough version, then layer in polish: labels, theme, color, annotations.
-5. **Save outputs** — Scripts live in the `R/` folder. Exported plots go to `tidytuesday Resources/`. Use the naming convention `YYYYMMDD_tidytuesday_description.R` and `YYYYMMDD_tidytuesday_description.png`.
+5. **Save outputs** — Scripts live directly in the `tidytuesday/` folder (not in an `R/` subfolder). Exported plots go to `tidytuesday Resources/`. Use the naming convention `YYYYMMDD_tidytuesday_description.R` and `YYYYMMDD_tidytuesday_description.png`.
 
 ## Project-Specific Rules
 
