@@ -203,7 +203,7 @@ p3 <- ggplot(world_change) +
   ) +
   coord_sf(crs = "+proj=eqearth") +
   labs(
-    title = "Change in Urban Green Space per Capita, 1990-2020",
+    title = "Change in Urban Green Areas per Capita, 1990-2020",
     subtitle = title_text,
     caption = caption_text
   ) +
